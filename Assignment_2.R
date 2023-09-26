@@ -15,7 +15,7 @@ df <- df[ ,!(names(df) %in% drops)]
 df_numeric <- df %>% select(where(is.numeric))
 
 # Log-scale the data (adding a small constant to avoid log(0))
-log_df <- log2(df_numeric + 1)
+log_df <- log2(df_numeric - min(df_numeric + 2))
 
 # Calculate per-gene median expression ranges
 ranges <- apply(log_df, 1, function(row) {
