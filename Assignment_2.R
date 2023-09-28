@@ -40,6 +40,7 @@ data_file <- file.path(data_dir,"nacc_log.csv")
 metadata_file <- file.path(data_dir,"nacc_meta.csv")
 df <- read.csv(data_file)
 df_meta <- read.csv(metadata_file)
+library(gprofiler2)
 gostres <- gost(query = df$X, 
                 organism = "hsapiens", ordered_query = FALSE, 
                 multi_query = FALSE, significant = TRUE, exclude_iea = FALSE, 
@@ -48,3 +49,22 @@ gostres <- gost(query = df$X,
                 domain_scope = "annotated", custom_bg = NULL, 
                 numeric_ns = "", sources = NULL, as_short_link = FALSE, highlight = TRUE)
 gostplot(gostres, capped = FALSE, interactive =FALSE)
+
+# Part Six ----------------------------------------------------------------
+BiocManager::install("GOplot")
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(DOSE)
+
+data(geneList, package="DOSE")
+gene <- names(geneList)[abs(geneList) > 2]
+ego <- enrichGO(gene          = gene,
+                universe      = df$X,
+                OrgDb         = org.Hs.eg.db,
+                ont           = "CC",
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 0.01,
+                qvalueCutoff  = 0.05,
+                readable      = TRUE)
+head(ego,3)
+goplot(ego)
